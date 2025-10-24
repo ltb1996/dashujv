@@ -161,15 +161,15 @@ export const optionHandle = (regionCode: string, list: object[], mapData: Mapdat
           type: "effectScatter",
           coordinateSystem: "geo",
           symbolSize: function (val: any) {
-            return 4;
+            return 3; // 减小圆点大小，更精致
             // return val[2] / 50;
           },
           legendHoverLink: true,
           showEffectOn: "render",
           rippleEffect: {
-            // period: 4,
-            scale: 6,
-            color: "rgba(255,255,255, 1)",
+            period: 4, // 增加波纹周期，减慢动画
+            scale: 4, // 减小波纹范围，从6减到4
+            color: "rgba(255,255,255, 0.8)", // 降低波纹透明度
             brushType: "fill",
           },
           tooltip: {
@@ -192,23 +192,23 @@ export const optionHandle = (regionCode: string, list: object[], mapData: Mapdat
               return param.name.slice(0, 2);
             },
 
-            fontSize: 11,
-            offset: [0, 2],
+            fontSize: 10, // 稍微增大字体
+            offset: [0, 8], // 增加偏移量，让标签距离圆点更远（从2增加到8）
             position: "bottom",
-            textBorderColor: "#fff",
+            textBorderColor: "#000", // 改为黑色描边，对比更明显
             textShadowColor: "#000",
             textShadowBlur: 10,
-            textBorderWidth: 0,
+            textBorderWidth: 1, // 增加描边宽度
             color: "#FFF",
             show: true,
           },
           // colorBy: "data",
           itemStyle: {
-            color: "rgba(255,255,255,1)",
-            borderColor: "rgba(2255,255,255,2)",
-            borderWidth: 4,
+            color: "rgba(255,255,255,0.9)", // 略微降低圆点透明度
+            borderColor: "rgba(255,255,255,0.5)", // 调整边框透明度
+            borderWidth: 2, // 减小边框宽度，从4减到2
             shadowColor: "#000",
-            shadowBlur: 10,
+            shadowBlur: 10, // 减小阴影范围
           },
         },
     ],
