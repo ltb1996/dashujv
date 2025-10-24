@@ -170,7 +170,7 @@ onUnmounted(() => {
   align-items: center;
   gap: 10px;
   padding: 10px 8px;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
   background: rgba(0, 40, 80, 0.3);
   border: 1px solid rgba(0, 120, 255, 0.2);
   border-radius: 4px;
@@ -242,6 +242,8 @@ onUnmounted(() => {
 .rank-change {
   flex-shrink: 0;
   text-align: right;
+  display: flex;
+  align-items: center;
 
   .change-value {
     font-size: 16px;

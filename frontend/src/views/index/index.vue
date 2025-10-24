@@ -32,7 +32,7 @@ import RightBottom from "./right-bottom.vue";
       </ItemWrap>
     </div>
     <div class="contetn_center">
-      <CenterMap class="contetn_center_top" title="全国农产品价格分布图" />
+      <CenterMap class="contetn_center_top" title="全国农产品均价分布图" />
       <ItemWrap class="contetn_center-bottom" title="价格趋势预测">
         <CenterBottom />
       </ItemWrap>

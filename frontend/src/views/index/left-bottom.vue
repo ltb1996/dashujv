@@ -194,7 +194,7 @@ onUnmounted(() => {
   &:hover {
     background: rgba(0, 60, 120, 0.3);
     border-color: rgba(0, 212, 255, 0.3);
-    transform: translateX(2px);
+    // transform: translateX(2px);
   }
 
   &.row-even {
