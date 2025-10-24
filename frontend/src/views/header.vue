@@ -2,7 +2,7 @@
 import { reactive } from "vue";
 import dayjs from 'dayjs';
 import type {DateDataType} from "./index.d"
-import {useSettingStore} from "@/stores/index"
+import {useSettingStore} from "../stores/index"
 
 const dateData = reactive<DateDataType>({
   dateDay: "",

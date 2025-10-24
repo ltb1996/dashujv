@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { reactive, ref, onMounted, onUnmounted } from "vue";
-import { getStatisticsOverview, getLatestPrices } from "@/api/agriPrice.api";
-import CountUp from "@/components/count-up";
+import { getStatisticsOverview, getLatestPrices } from "../../api/agriPrice.api";
+import CountUp from "../../components/count-up";
 import { ElMessage } from "element-plus";
-import type { StatisticsOverview, PriceData } from "@/types/agriPrice";
+import type { StatisticsOverview, PriceData } from "../../types/agriPrice";
 
 const duration = ref(2);
 const state = reactive({

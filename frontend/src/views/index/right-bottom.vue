@@ -1,193 +1,184 @@
 <script setup lang="ts">
-import { rightBottom } from "@/api";
-import SeamlessScroll from "@/components/seamless-scroll";
-import { computed, onMounted, reactive } from "vue";
-import { useSettingStore } from "@/stores";
-import { storeToRefs } from "pinia";
-import EmptyCom from "@/components/empty-com";
+import { ref, onMounted, onUnmounted } from "vue";
+import { getChangeStatistics } from "../../api/agriPrice.api";
 import { ElMessage } from "element-plus";
+import type { ChangeStatistics } from "../../types/agriPrice";
 
-const settingStore = useSettingStore();
-const { defaultOption, indexConfig } = storeToRefs(settingStore);
-const state = reactive<any>({
-  list: [],
-  defaultOption: {
-    ...defaultOption.value,
-    singleHeight: 252,
-    limitScrollNum: 3,
-    // step:3
-  },
-  scroll: true,
-});
+const option = ref({});
+const loading = ref(false);
+let timer: any = null;
 
-const getData = () => {
-  rightBottom({ limitNum: 20 })
-    .then((res) => {
-      console.log("右下", res);
-      if (res.success) {
-        state.list = res.data.list;
-      } else {
-        ElMessage({
-          message: res.msg,
-          type: "warning",
-        });
-      }
-    })
-    .catch((err) => {
-      ElMessage.error(err);
-    });
-};
-
-const comName = computed(() => {
-  if (indexConfig.value.rightBottomSwiper) {
-    return SeamlessScroll;
-  } else {
-    return EmptyCom;
+const getData = async () => {
+  try {
+    loading.value = true;
+    // 获取90天的涨跌统计
+    const res = await getChangeStatistics(90);
+    
+    if (res.success && res.data) {
+      const changeData: ChangeStatistics = res.data;
+      setOption(changeData);
+      console.log("右下--价格波动分布", res);
+    }
+  } catch (err: any) {
+    console.error("获取涨跌统计失败:", err);
+    ElMessage.error(err || "获取价格波动分布数据失败");
+  } finally {
+    loading.value = false;
   }
-});
-function montionFilter(val: any) {
-  // console.log(val);
-  return val ? Number(val).toFixed(2) : "--";
-}
-const handleAddress = (item: any) => {
-  return `${item.provinceName}/${item.cityName}/${item.countyName}`;
 };
+
+const setOption = (changeData: ChangeStatistics) => {
+  const distribution = changeData.distribution;
+  
+  // 饼图数据
+  const pieData = [
+    { 
+      value: distribution.bigUp, 
+      name: '大涨(>2%)',
+      itemStyle: { color: '#f5023d' }
+    },
+    { 
+      value: distribution.smallUp, 
+      name: '小涨(0-2%)',
+      itemStyle: { color: '#fc9010' }
+    },
+    { 
+      value: distribution.flat, 
+      name: '持平',
+      itemStyle: { color: '#7EB7FD' }
+    },
+    { 
+      value: distribution.smallDown, 
+      name: '小跌(0-2%)',
+      itemStyle: { color: '#91cc75' }
+    },
+    { 
+      value: distribution.bigDown, 
+      name: '大跌(>2%)',
+      itemStyle: { color: '#07f7a8' }
+    },
+  ];
+  
+  option.value = {
+    tooltip: {
+      trigger: 'item',
+      backgroundColor: 'rgba(0,0,0,.8)',
+      borderColor: 'rgba(147, 235, 248, .8)',
+      textStyle: {
+        color: '#FFF',
+      },
+      formatter: function(params: any) {
+        const percent = params.percent.toFixed(1);
+        return `${params.marker} ${params.name}<br/>天数: <strong>${params.value}</strong><br/>占比: <strong>${percent}%</strong>`;
+      }
+    },
+    legend: {
+      orient: 'vertical',
+      right: '10px',
+      top: 'center',
+      textStyle: {
+        color: '#B4B4B4',
+        fontSize: 14,
+      },
+      itemWidth: 14,
+      itemHeight: 14,
+      itemGap: 12,
+      formatter: function(name: string) {
+        const item = pieData.find(d => d.name === name);
+        return `${name} ${item?.value || 0}天`;
+      }
+    },
+    series: [
+      {
+        name: '价格波动分布',
+        type: 'pie',
+        radius: ['40%', '70%'],
+        center: ['35%', '50%'],
+        avoidLabelOverlap: false,
+        itemStyle: {
+          borderRadius: 10,
+          borderColor: '#0a1e3d',
+          borderWidth: 2,
+        },
+        label: {
+          show: false,
+          position: 'center'
+        },
+        emphasis: {
+          label: {
+            show: true,
+            fontSize: 14,
+            fontWeight: 'bold',
+            color: '#fff',
+            formatter: function(params: any) {
+              return `${params.name}\n${params.value}天\n${params.percent.toFixed(1)}%`;
+            }
+          },
+          itemStyle: {
+            shadowBlur: 10,
+            shadowOffsetX: 0,
+            shadowColor: 'rgba(0, 0, 0, 0.5)'
+          }
+        },
+        labelLine: {
+          show: false
+        },
+        data: pieData
+      }
+    ]
+  };
+};
+
 onMounted(() => {
   getData();
+  
+  // 每5分钟刷新一次
+  timer = setInterval(() => {
+    getData();
+  }, 300000);
+});
+
+onUnmounted(() => {
+  if (timer) {
+    clearInterval(timer);
+  }
 });
 </script>
 
 <template>
-  <div class="right_bottom_wrap beautify-scroll-def" :class="{ 'overflow-y-auto': !indexConfig.rightBottomSwiper }">
-    <component
-      :is="comName"
-      :list="state.list"
-      v-model="state.scroll"
-      :singleHeight="state.defaultOption.singleHeight"
-      :step="state.defaultOption.step"
-      :limitScrollNum="state.defaultOption.limitScrollNum"
-      :hover="state.defaultOption.hover"
-      :singleWaitTime="state.defaultOption.singleWaitTime"
-      :wheel="state.defaultOption.wheel"
-    >
-      <ul class="right_bottom">
-        <li class="right_center_item" v-for="(item, i) in state.list" :key="i">
-          <span class="orderNum">{{ i + 1 }}</span>
-          <div class="inner_right">
-            <div class="dibu"></div>
-            <div class="flex">
-              <div class="info">
-                <span class="labels">设备ID：</span>
-                <span class="text-content zhuyao"> {{ item.gatewayno }}</span>
-              </div>
-              <div class="info">
-                <span class="labels">型号：</span>
-                <span class="text-content"> {{ item.terminalno }}</span>
-              </div>
-              <div class="info">
-                <span class="labels">告警值：</span>
-                <span class="text-content warning"> {{ montionFilter(item.alertvalue) }}</span>
-              </div>
-            </div>
-
-            <div class="flex">
-              <div class="info">
-                <span class="labels shrink-0"> 地址：</span>
-                <span class="ciyao truncate" style="font-size: 12px; width: 220px" :title="handleAddress(item)">
-                  {{ handleAddress(item) }}</span
-                >
-              </div>
-              <div class="info time shrink-0">
-                <span class="labels">时间：</span>
-                <span class="text-content" style="font-size: 12px"> {{ item.createtime }}</span>
-              </div>
-            </div>
-            <div class="flex">
-              <div class="info">
-                <span class="labels">报警内容：</span>
-                <span class="text-content ciyao" :class="{ warning: item.alertdetail }">
-                  {{ item.alertdetail || "无" }}</span
-                >
-              </div>
-            </div>
-          </div>
-        </li>
-      </ul>
-    </component>
+  <div class="right-bottom-container">
+    <v-chart 
+      class="chart" 
+      :option="option" 
+      v-if="JSON.stringify(option) != '{}'" 
+      v-loading="loading"
+    />
+    <div v-if="!loading && JSON.stringify(option) === '{}'" class="empty-state">
+      暂无数据
+    </div>
   </div>
 </template>
 
 <style scoped lang="scss">
-.right_bottom {
-  width: 100%;
+.right-bottom-container {
+  box-sizing: border-box;
+  padding: 0 10px;
   height: 100%;
-
-  .right_center_item {
+  position: relative;
+  
+  .chart {
+    width: 100%;
+    height: 252px;
+  }
+  
+  .empty-state {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: auto;
-    padding: 10px;
+    height: 252px;
+    color: #7abaff;
+    opacity: 0.6;
     font-size: 14px;
-    color: #fff;
-
-    .orderNum {
-      margin: 0 20px 0 -20px;
-    }
-
-    .inner_right {
-      position: relative;
-      height: 100%;
-      width: 400px;
-      flex-shrink: 0;
-      line-height: 1.5;
-
-      .dibu {
-        position: absolute;
-        height: 2px;
-        width: 104%;
-        background-image: url("@/assets/img/zuo_xuxian.png");
-        bottom: -12px;
-        left: -2%;
-        background-size: cover;
-      }
-    }
-
-    .info {
-      margin-right: 10px;
-      display: flex;
-      align-items: center;
-
-      .labels {
-        flex-shrink: 0;
-        font-size: 12px;
-        color: rgba(255, 255, 255, 0.6);
-      }
-
-      .zhuyao {
-        color: $primary-color;
-        font-size: 15px;
-      }
-
-      .ciyao {
-        color: rgba(255, 255, 255, 0.8);
-      }
-
-      .warning {
-        color: #e6a23c;
-        font-size: 15px;
-      }
-    }
   }
-}
-
-.right_bottom_wrap {
-  overflow: hidden;
-  width: 100%;
-  height: 252px;
-}
-
-.overflow-y-auto {
-  overflow-y: auto;
 }
 </style>

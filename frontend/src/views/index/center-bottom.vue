@@ -1,68 +1,110 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted, nextTick } from "vue";
-import { installationPlan } from "@/api";
+import { ref, onMounted, onUnmounted } from "vue";
+import { getPricePrediction } from "../../api/agriPrice.api";
 import { graphic } from "echarts/core";
 import { ElMessage } from "element-plus";
+import type { PredictionData } from "../../types/agriPrice";
 
 const option = ref({});
-const getData = () => {
-  installationPlan()
-    .then((res) => {
-      console.log("中下--安装计划", res);
-      if (res.success) {
-        setOption(res.data);
-      } else {
-        ElMessage({
-          message: res.msg,
-          type: "warning",
-        });
-      }
-    })
-    .catch((err) => {
-      ElMessage.error(err);
-    });
+const loading = ref(false);
+let timer: any = null;
+
+const getData = async () => {
+  try {
+    loading.value = true;
+    // 获取30天的价格预测，使用移动平均法
+    const res = await getPricePrediction(30, 'ma');
+    
+    if (res.success && res.data) {
+      const predictionData: PredictionData = res.data;
+      setOption(predictionData);
+      console.log("中下--价格趋势预测", res);
+    }
+  } catch (err: any) {
+    console.error("获取价格预测失败:", err);
+    ElMessage.error(err || "获取价格预测数据失败");
+  } finally {
+    loading.value = false;
+  }
 };
-const setOption = async (newData: any) => {
+
+const setOption = (predictionData: PredictionData) => {
+  // 处理历史数据
+  const historicalDates = predictionData.historical.map(item => {
+    const date = new Date(item.date);
+    return `${date.getMonth() + 1}/${date.getDate()}`;
+  });
+  const historicalValues = predictionData.historical.map(item => item.actual_value);
+  
+  // 处理预测数据
+  const predictionDates = predictionData.predictions.map(item => {
+    const date = new Date(item.date);
+    return `${date.getMonth() + 1}/${date.getDate()}`;
+  });
+  const predictionValues = predictionData.predictions.map(item => parseFloat(item.predicted_value));
+  const confidenceValues = predictionData.predictions.map(item => item.confidence);
+  
+  // 合并所有日期
+  const allDates = [...historicalDates, ...predictionDates];
+  
+  // 创建完整的历史数据数组（预测部分为null）
+  const fullHistoricalData = [
+    ...historicalValues,
+    ...new Array(predictionValues.length).fill(null)
+  ];
+  
+  // 创建完整的预测数据数组（历史部分为null，但保留最后一个历史点作为连接）
+  const fullPredictionData = [
+    ...new Array(historicalValues.length - 1).fill(null),
+    historicalValues[historicalValues.length - 1], // 连接点
+    ...predictionValues
+  ];
+
   option.value = {
     tooltip: {
       trigger: "axis",
-      backgroundColor: "rgba(0,0,0,.6)",
+      backgroundColor: "rgba(0,0,0,.8)",
       borderColor: "rgba(147, 235, 248, .8)",
       textStyle: {
         color: "#FFF",
       },
       formatter: function (params: any) {
-        // 添加单位
-        var result = params[0].name + "<br>";
+        let result = params[0].name + "<br>";
         params.forEach(function (item: any) {
-          if (item.value) {
-            if (item.seriesName == "安装率") {
-              result += item.marker + " " + item.seriesName + " : " + item.value + "%</br>";
-            } else {
-              result += item.marker + " " + item.seriesName + " : " + item.value + "个</br>";
+          if (item.value !== null && item.value !== undefined) {
+            result += item.marker + " " + item.seriesName + ": " + item.value.toFixed(2);
+            // 如果是预测数据，显示置信度
+            if (item.seriesName === "预测价格" && item.dataIndex >= historicalValues.length) {
+              const confIndex = item.dataIndex - historicalValues.length;
+              if (confidenceValues[confIndex]) {
+                result += ` (置信度: ${(confidenceValues[confIndex] * 100).toFixed(1)}%)`;
+              }
             }
-          } else {
-            result += item.marker + " " + item.seriesName + " :  - </br>";
+            result += "<br>";
           }
         });
         return result;
       },
     },
     legend: {
-      data: ["已安装", "计划安装", "安装率"],
+      data: ["历史价格", "预测价格"],
       textStyle: {
         color: "#B4B4B4",
       },
       top: "0",
+      right: "20px",
     },
     grid: {
       left: "50px",
-      right: "40px",
+      right: "50px",
       bottom: "30px",
-      top: "20px",
+      top: "40px",
+      containLabel: true,
     },
     xAxis: {
-      data: newData.category,
+      type: "category",
+      data: allDates,
+      boundaryGap: false,
       axisLine: {
         lineStyle: {
           color: "#B4B4B4",
@@ -71,80 +113,105 @@ const setOption = async (newData: any) => {
       axisTick: {
         show: false,
       },
+      axisLabel: {
+        color: "#B4B4B4",
+        interval: Math.floor(allDates.length / 10), // 控制标签显示密度
+      },
     },
-    yAxis: [
-      {
-        splitLine: { show: false },
-        axisLine: {
-          lineStyle: {
-            color: "#B4B4B4",
-          },
-        },
-
-        axisLabel: {
-          formatter: "{value}",
+    yAxis: {
+      type: "value",
+      name: "价格指数",
+      nameTextStyle: {
+        color: "#B4B4B4",
+      },
+      splitLine: {
+        show: true,
+        lineStyle: {
+          color: "rgba(180, 180, 180, 0.2)",
+          type: "dashed",
         },
       },
-      {
-        splitLine: { show: false },
-        axisLine: {
-          lineStyle: {
-            color: "#B4B4B4",
-          },
-        },
-        axisLabel: {
-          formatter: "{value}% ",
+      axisLine: {
+        lineStyle: {
+          color: "#B4B4B4",
         },
       },
-    ],
+      axisLabel: {
+        formatter: "{value}",
+        color: "#B4B4B4",
+      },
+    },
     series: [
       {
-        name: "已安装",
-        type: "bar",
-        barWidth: 10,
-        itemStyle: {
-          borderRadius: 5,
-          color: new graphic.LinearGradient(0, 0, 0, 1, [
-            { offset: 0, color: "#956FD4" },
-            { offset: 1, color: "#3EACE5" },
-          ]),
-        },
-        data: newData.barData,
-      },
-      {
-        name: "计划安装",
-        type: "bar",
-        barGap: "-100%",
-        barWidth: 10,
-        itemStyle: {
-          borderRadius: 5,
-          color: new graphic.LinearGradient(0, 0, 0, 1, [
-            { offset: 0, color: "rgba(156,107,211,0.8)" },
-            { offset: 0.2, color: "rgba(156,107,211,0.5)" },
-            { offset: 1, color: "rgba(156,107,211,0.2)" },
-          ]),
-        },
-        z: -12,
-        data: newData.lineData,
-      },
-      {
-        name: "安装率",
+        name: "历史价格",
         type: "line",
+        data: fullHistoricalData,
         smooth: true,
-        showAllSymbol: true,
-        symbol: "emptyCircle",
-        symbolSize: 8,
-        yAxisIndex: 1,
+        symbol: "circle",
+        symbolSize: 6,
+        lineStyle: {
+          width: 3,
+          color: new graphic.LinearGradient(0, 0, 1, 0, [
+            { offset: 0, color: "#3EACE5" },
+            { offset: 1, color: "#956FD4" },
+          ]),
+        },
+        itemStyle: {
+          color: "#3EACE5",
+          borderColor: "#fff",
+          borderWidth: 2,
+        },
+        areaStyle: {
+          color: new graphic.LinearGradient(0, 0, 0, 1, [
+            { offset: 0, color: "rgba(62, 172, 229, 0.3)" },
+            { offset: 1, color: "rgba(62, 172, 229, 0.05)" },
+          ]),
+        },
+      },
+      {
+        name: "预测价格",
+        type: "line",
+        data: fullPredictionData,
+        smooth: true,
+        symbol: "diamond",
+        symbolSize: 6,
+        lineStyle: {
+          width: 3,
+          type: "dashed",
+          color: new graphic.LinearGradient(0, 0, 1, 0, [
+            { offset: 0, color: "#F02FC2" },
+            { offset: 1, color: "#FF9F7F" },
+          ]),
+        },
         itemStyle: {
           color: "#F02FC2",
+          borderColor: "#fff",
+          borderWidth: 2,
         },
-        data: newData.rateData,
+        areaStyle: {
+          color: new graphic.LinearGradient(0, 0, 0, 1, [
+            { offset: 0, color: "rgba(240, 47, 194, 0.2)" },
+            { offset: 1, color: "rgba(240, 47, 194, 0.05)" },
+          ]),
+        },
       },
     ],
   };
 };
+
 onMounted(() => {
   getData();
+  
+  // 每5分钟刷新一次预测数据
+  timer = setInterval(() => {
+    getData();
+  }, 300000);
+});
+
+onUnmounted(() => {
+  if (timer) {
+    clearInterval(timer);
+  }
 });
 </script>
 

@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue";
-import { getProductStatistics } from "@/api/agriPrice.api";
+import { getProductStatistics } from "../../api/agriPrice.api";
 import { ElMessage } from "element-plus";
-import type { ProductStatistics } from "@/types/agriPrice";
+import type { ProductStatistics } from "../../types/agriPrice";
 
 const productList = ref<any[]>([]);
 const loading = ref(false);
