@@ -46,7 +46,7 @@ const dataSetHandle = async (regionCode: string, list: object[]) => {
 const getData = async (regionCode: string) => {
   centerMap({ regionCode: regionCode })
     .then((res) => {
-      console.log("中上--设备分布", res);
+      console.log("地图数据", res);
       if (res.success) {
         dataSetHandle(res.data.regionCode, res.data.dataList);
       } else {
@@ -97,13 +97,8 @@ const mapClick = (params: any) => {
     <div class="mapwrap">
       <BorderBox13>
         <div class="quanguo" @click="getData('china')" v-if="code !== 'china'">中国</div>
-        <v-chart
-          class="chart"
-          :option="option"
-          ref="centerMapRef"
-          @click="mapClick"
-          v-if="JSON.stringify(option) != '{}'"
-        />
+        <v-chart class="chart" :option="option" ref="centerMapRef" @click="mapClick"
+          v-if="JSON.stringify(option) != '{}'" />
       </BorderBox13>
     </div>
   </div>

@@ -4,7 +4,6 @@ export interface MapdataType {
   value: [number, number, number]; //x,y,value  第一个x 第二个y  第三个value
 }
 export const optionHandle = (regionCode: string, list: object[], mapData: MapdataType[]) => {
-  console.log(regionCode, list, mapData);
   let top = 45;
   let zoom = ["china"].includes(regionCode) ? 1.05 : 1;
   return {
@@ -15,18 +14,18 @@ export const optionHandle = (regionCode: string, list: object[], mapData: Mapdat
     legend: {
       show: false,
     },
-    visualMap: {
-      seriesIndex: 0,
-      left: 20,
-      bottom: 20,
-      pieces: [
-        { gte: 500, label: "500元以上" }, // 不指定 max，表示 max 为无限大（Infinity）。
-        { gte: 400, lte: 499, label: "400-499元" },
-        { gte: 300, lte: 399, label: "300-399元" },
-        { gte: 200, lte: 299, label: "200-299元" },
-        { gte: 100, lte: 199, label: "100-199元" },
-        { lte: 99, label: "99元以下" }, // 不指定 min，表示 min 为无限大（-Infinity）。
-      ],
+     visualMap: {
+       seriesIndex: 0,
+       left: 20,
+       bottom: 20,
+       pieces: [
+         { gte: 500, label: "500以上" },
+         { gte: 400, lte: 499, label: "400-499" },
+         { gte: 300, lte: 399, label: "300-399" },
+         { gte: 200, lte: 249, label: "200-249" },
+         { gte: 100, lte: 199, label: "100-199" },
+         { lte: 59, label: "59以下" },
+       ],
       inRange: {
         // 渐变颜色，从小到大
         // FFFFFF,EDF7FD,DBF0FA,C9E8F8,B7E1F6,A5D9F3,93D2F1,81CAEF,6FC2EC,5DBBEA,4AB3E8,38ACE5,26A4E3,1C9AD9,1A8DC7,
@@ -34,17 +33,17 @@ export const optionHandle = (regionCode: string, list: object[], mapData: Mapdat
         // 1573A2,136790,105A7E,0E4D6C,0C405A,093348,072636,051A24,020D12
         color: [
           // "#EDF7FD",
-          "rgba(237,247,253,.8)",
+          "rgba(237,247,253,.2)",
           // "#B7E1F6",
-          "rgba(183,225,246,.9)",
+          "rgba(183,225,246,.2)",
           // "#81CAEF",
-          "rgba(129,202,239,.9)",
+          "rgba(129,202,239,.2)",
           // "#38ACE5",
-          "rgba(56,172,229,.9)",
+          "rgba(56,172,229,.2)",
           // "#1781B5",
-          "rgba(23,129,181,.9)",
+          "rgba(23,129,181,.2)",
           // "#105A7E",
-          "rgba(16,90,126,0.9)",
+          "rgba(16,90,126,0.5)",
         ],
       },
       textStyle: {
