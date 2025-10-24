@@ -2,8 +2,8 @@ export interface DateDataType {
     dateDay: string,
     dateYear: string,
     dateWeek: string,
-    timing: NodeJS.Timer
-}   
+    timing: any
+}
 
 interface CountUpOptions {
     startVal?: number; // number to start at (0)

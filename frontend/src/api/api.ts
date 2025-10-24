@@ -1,7 +1,3 @@
-/*
- * @LastEditors: 刘嘉威 daidaibg@163.com
- * @LastEditTime: 2024-03-28 16:52:31
- */
 import axios from "axios";
 import type { AxiosRequestConfig, AxiosResponse } from "axios";
 import { StorageEnum, RequestEnum } from "@/enums";

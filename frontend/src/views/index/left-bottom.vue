@@ -33,7 +33,7 @@ const getData = async () => {
       productList.value = Object.keys(stats).map((key) => ({
         key,
         name: stats[key].name || productNameMap[key] || key,
-        current: parseFloat(stats[key].current),
+        current: stats[key].current, // 不需要parseFloat，因为已经是number类型
         average: parseFloat(stats[key].average),
         max: parseFloat(stats[key].max),
         min: parseFloat(stats[key].min),
@@ -92,13 +92,13 @@ onUnmounted(() => {
             <span class="price-unit">{{ item.unit }}</span>
           </div>
           <div class="col col-average">
-            <span class="avg-value">{{ item.average }}</span>
+            <span class="avg-value">{{ item.average.toFixed(2) }}</span>
           </div>
           <div class="col col-range">
             <div class="range-values">
-              <span class="max-value">{{ item.max }}</span>
+              <span class="max-value">{{ item.max.toFixed(2) }}</span>
               <span class="divider">/</span>
-              <span class="min-value">{{ item.min }}</span>
+              <span class="min-value">{{ item.min.toFixed(2) }}</span>
             </div>
           </div>
         </div>
