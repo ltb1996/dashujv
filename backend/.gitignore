@@ -1,0 +1,54 @@
+# ============================================
+# 后端项目 (Node.js + Express + MongoDB)
+# ============================================
+
+# 依赖目录
+node_modules/
+package-lock.json
+
+# 环境变量（敏感信息）
+.env
+.env.local
+.env.production
+.env.*.local
+
+# 日志文件
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Python相关
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+
+# 临时文件
+*.tmp
+*.temp
+.cache/
+test_response.html
+test_*.html
+
+# 数据库相关（如果需要忽略本地数据库文件）
+# data/agri_price_mock_data.json  # 取消注释以忽略数据文件
+*.db
+*.sqlite
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
+
+# IDE配置
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 其他
+.eslintcache
+coverage/
+

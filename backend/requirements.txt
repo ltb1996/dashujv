@@ -1,0 +1,15 @@
+# Python Dependencies for Data Generation Script
+# 
+# generate_mock_data.py uses ONLY Python standard libraries
+# No additional packages need to be installed!
+# 
+# Standard libraries used:
+# - json
+# - random
+# - datetime
+# - os
+# - math
+# 
+# If you need to run the script, simply execute:
+# python generate_mock_data.py
+
