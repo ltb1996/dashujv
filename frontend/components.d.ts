@@ -21,4 +21,7 @@ declare module 'vue' {
     ScaleScreen: typeof import('./src/components/scale-screen/scale-screen.vue')['default']
     SeamlessScroll: typeof import('./src/components/seamless-scroll/seamless-scroll.vue')['default']
   }
+  export interface ComponentCustomProperties {
+    vLoading: typeof import('element-plus/es')['ElLoadingDirective']
+  }
 }
