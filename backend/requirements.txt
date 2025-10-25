@@ -1,15 +1,34 @@
-# Python Dependencies for Data Generation Script
+# Python Dependencies for Agricultural Price Data System
 # 
-# generate_mock_data.py uses ONLY Python standard libraries
-# No additional packages need to be installed!
+# This file contains all dependencies for:
+# - Data generation (generate_mock_data.py)
+# - Task 3: Data exploration and preprocessing (Pandas/NumPy)
+# - Task 4: Data visualization (Matplotlib/Pyecharts)
+# - Task 5: Machine learning modeling (sklearn)
 # 
-# Standard libraries used:
-# - json
-# - random
-# - datetime
-# - os
-# - math
-# 
-# If you need to run the script, simply execute:
-# python generate_mock_data.py
+# Installation:
+# pip install -r requirements.txt
 
+# ============================================
+# Task 3: Data Processing Libraries
+# ============================================
+pandas>=1.5.0              # 数据分析和处理
+numpy>=1.23.0              # 数值计算
+
+# ============================================
+# Task 4: Data Visualization Libraries
+# ============================================
+matplotlib>=3.6.0          # 静态图表绘制
+seaborn>=0.12.0            # 统计可视化
+pyecharts>=2.0.0           # 交互式图表
+
+# ============================================
+# Task 5: Machine Learning Libraries
+# ============================================
+scikit-learn>=1.2.0        # 机器学习模型
+joblib>=1.2.0              # 模型保存和加载
+
+# ============================================
+# Additional Utilities
+# ============================================
+openpyxl>=3.0.0           # Excel文件支持

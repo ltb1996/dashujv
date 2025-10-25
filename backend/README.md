@@ -363,3 +363,22 @@ dashujv/
     ├── vite.config.ts            ✓ 提交
     └── node_modules/             ✗ 不提交（已忽略）
 
+
+
+
+
+backend/
+├── data/
+│   ├── agri_price_mock_data.json    ← 供后端使用（格式不变）
+│   └── processed_data.csv            ← 新增：预处理数据
+│
+├── visualizations/                   ← 新增目录
+│   ├── price_analysis_matplotlib.png
+│   ├── price_trend_pyecharts.html
+│   ├── monthly_stats_pyecharts.html
+│   └── change_distribution_pyecharts.html
+│
+└── models/                           ← 新增目录
+    ├── best_price_prediction_model.pkl
+    ├── model_prediction_comparison.png
+    └── model_evaluation_report.txt
