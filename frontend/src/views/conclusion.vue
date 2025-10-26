@@ -85,7 +85,7 @@
           <div class="application-value">
             <div class="value-item" v-for="(value, index) in applicationValues" :key="index">
               <div class="value-icon">
-                <i :class="value.icon"></i>
+                <img :src="value.icon" :alt="value.title" />
               </div>
               <div class="value-content">
                 <h4>{{ value.title }}</h4>
@@ -122,6 +122,13 @@
 import { reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import CountUp from '@/components/count-up';
+
+// 导入图片
+import icon1 from '@/assets/img/big-data/center-details-data1.png';
+import icon2 from '@/assets/img/big-data/center-details-data2.png';
+import icon3 from '@/assets/img/big-data/center-details-data3.png';
+import icon4 from '@/assets/img/big-data/center-details-data4.png';
+import icon5 from '@/assets/img/big-data/center-details-data5.png';
 
 const router = useRouter();
 
@@ -208,27 +215,27 @@ const applicationValues = reactive([
   {
     title: '政府决策支持',
     description: '价格监测预警、市场调控政策制定',
-    icon: '🏛️'
+    icon: icon1
   },
   {
     title: '农业生产者',
     description: '种植决策指导、最佳销售时机预测',
-    icon: '👨‍🌾'
+    icon: icon2
   },
   {
     title: '流通企业',
     description: '采购计划制定、库存管理优化',
-    icon: '🏢'
+    icon: icon3
   },
   {
     title: '消费者服务',
     description: '价格趋势查询、消费建议提供',
-    icon: '👥'
+    icon: icon4
   },
   {
     title: '学术研究',
     description: '价格规律研究、预测模型验证',
-    icon: '🎓'
+    icon: icon5
   }
 ]);
 
@@ -260,6 +267,39 @@ const goBack = () => {
   box-sizing: border-box;
   height: 100%;
   padding-bottom: 50px;
+  
+  // 隐藏滚动条
+  &::-webkit-scrollbar {
+    width: 0px; /* 完全隐藏滚动条 */
+    background: transparent;
+  }
+  
+  // 如果需要优雅的滚动条，可以使用下面的样式替代上面的隐藏样式：
+  /*
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 3px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 234, 255, 0.3);
+    border-radius: 3px;
+    
+    &:hover {
+      background: rgba(0, 234, 255, 0.5);
+    }
+  }
+  */
+  
+  // 兼容 Firefox
+  scrollbar-width: none;
+  
+  // 兼容 IE/Edge
+  -ms-overflow-style: none;
 }
 
 .conclusion-container {
@@ -551,7 +591,6 @@ const goBack = () => {
   }
   
   .value-icon {
-    font-size: 32px;
     width: 50px;
     height: 50px;
     display: flex;
@@ -560,6 +599,14 @@ const goBack = () => {
     background: rgba(0, 234, 255, 0.1);
     border-radius: 50%;
     flex-shrink: 0;
+    overflow: hidden;
+    
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+    }
   }
   
   .value-content {
