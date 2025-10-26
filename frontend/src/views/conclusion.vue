@@ -270,36 +270,15 @@ const goBack = () => {
   
   // 隐藏滚动条
   &::-webkit-scrollbar {
-    width: 0px; /* 完全隐藏滚动条 */
+    width: 0px; 
     background: transparent;
   }
   
-  // 如果需要优雅的滚动条，可以使用下面的样式替代上面的隐藏样式：
-  /*
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-  
-  &::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.1);
-    border-radius: 3px;
-  }
-  
-  &::-webkit-scrollbar-thumb {
-    background: rgba(0, 234, 255, 0.3);
-    border-radius: 3px;
-    
-    &:hover {
-      background: rgba(0, 234, 255, 0.5);
-    }
-  }
-  */
-  
   // 兼容 Firefox
-  scrollbar-width: none;
+  // scrollbar-width: none;
   
   // 兼容 IE/Edge
-  -ms-overflow-style: none;
+  // -ms-overflow-style: none;
 }
 
 .conclusion-container {
