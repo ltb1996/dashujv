@@ -1,8 +1,12 @@
 <script setup lang="ts">
 import { reactive, onUnmounted } from "vue";
+import { useRouter, useRoute } from 'vue-router';
 import dayjs from 'dayjs';
 import type {DateDataType} from "./index.d"
 import {useSettingStore} from "../stores/index"
+
+const router = useRouter();
+const route = useRoute();
 
 const dateData = reactive<DateDataType>({
   dateDay: "",
@@ -28,6 +32,16 @@ onUnmounted(() => {
   }
 });
 
+// 导航到成果展示页面
+const goToConclusion = () => {
+  router.push('/conclusion');
+};
+
+// 返回数据大屏
+const goToIndex = () => {
+  router.push('/index');
+};
+
 timeFn()
 </script>
 
@@ -43,6 +57,28 @@ timeFn()
     </div>
     <div class="timers">
       {{ dateData.dateYear }} {{ dateData.dateWeek }} {{ dateData.dateDay }}
+
+      <!-- 页面切换按钮 -->
+      <div class="nav-buttons">
+        <button 
+          v-if="route.path === '/index'" 
+          class="nav-btn conclusion-btn" 
+          @click="goToConclusion"
+          title="查看项目成果"
+        >
+          <span>📊</span>
+          <span>成果展示</span>
+        </button>
+        <button 
+          v-if="route.path === '/conclusion'" 
+          class="nav-btn index-btn" 
+          @click="goToIndex"
+          title="返回数据大屏"
+        >
+          <span>📈</span>
+          <span>数据大屏</span>
+        </button>
+      </div>
 
       <div class="setting_icon"   @click="setSettingShow(true)">
           <img src="@/assets/img/headers/setting.png" alt="设置">
@@ -94,12 +130,59 @@ timeFn()
     font-size: 18px;
     display: flex;
     align-items: center;
+    gap: 15px;
+
+    .nav-buttons {
+      display: flex;
+      gap: 10px;
+
+      .nav-btn {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 14px;
+        background: linear-gradient(135deg, rgba(0, 114, 255, 0.3) 0%, rgba(0, 234, 255, 0.3) 100%);
+        border: 1px solid rgba(0, 234, 255, 0.5);
+        border-radius: 20px;
+        color: #00eaff;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+
+        &:hover {
+          background: linear-gradient(135deg, rgba(0, 114, 255, 0.5) 0%, rgba(0, 234, 255, 0.5) 100%);
+          border-color: #00eaff;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0, 234, 255, 0.3);
+        }
+
+        &:active {
+          transform: translateY(0);
+        }
+
+        span:first-child {
+          font-size: 16px;
+        }
+      }
+
+      .conclusion-btn {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.3) 100%);
+        border-color: rgba(102, 126, 234, 0.5);
+        color: #a78bfa;
+
+        &:hover {
+          background: linear-gradient(135deg, rgba(102, 126, 234, 0.5) 0%, rgba(118, 75, 162, 0.5) 100%);
+          border-color: #a78bfa;
+          box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+      }
+    }
 
     .setting_icon {
       width: 20px;
       height: 20px;
       cursor: pointer;
-      margin-left: 12px;
       img{
         width: 100%;
         height: 100%;
