@@ -1,7 +1,7 @@
 {
   "name": "agri-price-backend",
   "version": "1.0.0",
-  "description": "农产品价格预测与分析系统 - 后端服务",
+  "description": "农产品市场预测与大数据分析系统 - 后端服务",
   "main": "src/app.js",
   "scripts": {
     "start": "node src/app.js",

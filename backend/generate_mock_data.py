@@ -820,7 +820,7 @@ class AgriPriceDataGenerator:
         report_path = os.path.join(models_dir, 'model_evaluation_report.txt')
         with open(report_path, 'w', encoding='utf-8') as f:
             f.write("="*80 + "\n")
-            f.write("农产品价格预测模型评估报告\n")
+            f.write("农产品市场预测模型评估报告\n")
             f.write("="*80 + "\n\n")
             f.write(f"生成时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
             f.write(f"训练样本数: {len(X_train)}\n")

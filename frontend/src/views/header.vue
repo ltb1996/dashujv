@@ -52,7 +52,7 @@ timeFn()
     <div class="guang"></div>
     <div class="d-flex jc-center">
       <div class="title">
-        <span class="title-text">农产品价格预测与分析系统</span>
+        <span class="title-text">农产品市场预测与大数据分析系统</span>
       </div>
     </div>
     <div class="timers">

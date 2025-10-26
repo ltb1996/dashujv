@@ -25,7 +25,7 @@ app.use(config.api.prefix, routes);
 // 根路径
 app.get('/', (req, res) => {
   res.json({
-    name: '农产品价格预测与分析系统API',
+    name: '农产品市场预测与大数据分析系统API',
     version: '1.0.0',
     status: 'running',
     endpoints: {
@@ -65,7 +65,7 @@ const startServer = async () => {
     // 启动服务器
     app.listen(config.server.port, () => {
       console.log('\n' + '='.repeat(60));
-      console.log('  农产品价格预测与分析系统 - 后端服务');
+      console.log('  农产品市场预测与大数据分析系统 - 后端服务');
       console.log('='.repeat(60));
       console.log(`  环境: ${config.server.env}`);
       console.log(`  端口: ${config.server.port}`);
